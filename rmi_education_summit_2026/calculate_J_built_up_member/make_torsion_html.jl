@@ -73,7 +73,7 @@ const data = [
   showscale:false,hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 3]))],y:[$(js(def[w, 1]))],z:[$(js(def[w, 2]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'lines',x:[$(js(ox))],y:[$(js(oy))],z:[$(js(oz))],line:{color:'#0b0b0b',width:5},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'lines',x:[$(js(ox))],y:[$(js(oy))],z:[$(js(oz))],line:{color:'#eda100',width:6},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eda100',width:10},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(cu))],w:[$(js(cv))],
   sizemode:'absolute',sizeref:1.6,anchor:'tip',colorscale:[[0,'#eda100'],[1,'#eda100']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
@@ -81,7 +81,7 @@ const data = [
  $(join(sec_traces, ",\n "))
 ];
 const layout = {
- title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
+ title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (yellow outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
  scene:{domain:{x:[0,0.74],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'Z (in)'},showbackground:false,showgrid:false,zeroline:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:-1.35,y:-1.35,z:1.35},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  showlegend:false,
