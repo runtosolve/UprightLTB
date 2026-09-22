@@ -9,7 +9,9 @@ and [QuadShellFiniteElement.jl](https://github.com/runtosolve/QuadShellFiniteEle
   Hughes–Brezzi option in QuadShellFiniteElement.jl and TriShellFiniteElement.jl.
 - `rmi_education_summit_2026/calculate_J_built_up_member/` — effective J of the welded pair, weld spacing study vs. the Tlumak equation, and the
   global flexural-torsional eigenbuckling of the 44 in member.
-- `docs/` — GitHub Pages site: interactive WGLMakie buckling mode shape (`index.html`) and summary figures.
+- `docs/` — GitHub Pages site: browser-interactive 3D buckling mode shape (`index.html`, plotly.js; rotate/zoom in the browser),
+  the static WGLMakie export (`mode_global_1_wglmakie_static.html`, snapshot only — WGLMakie's camera needs a live Julia
+  session, see `show_mode_wglmakie.jl`), and summary figures.
 
 **Hosted mode shape:** https://runtosolve.github.io/BuiltUpUprightTorsion/
 
