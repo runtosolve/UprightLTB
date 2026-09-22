@@ -90,7 +90,6 @@ const layout = {
         camera:{eye:{x:-1.6,y:-1.9,z:0.5},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.2,0.8],title:{text:'Y (in)'},zeroline:false},
- annotations:[{text:'cross section at mid-length: gray undeformed, blue buckled (× $(round(sc, sigdigits = 3)))',x:0.8,y:0.83,xref:'paper',yref:'paper',showarrow:false,font:{size:13,color:'#52514e'}}],
  legend:{x:0.02,y:0.02,bgcolor:'rgba(255,255,255,0.7)'},margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
