@@ -47,8 +47,14 @@ w = findall(corner .& inweld .& (xyz[:, 3] .> 0) .& (xyz[:, 3] .< L))
 # loads: cones at every 4th end node, pointing into the member
 ends = findall((xyz[:, 3] .≈ 0.0) .| (xyz[:, 3] .≈ L))[1:4:end]
 cx = [xyz[k, 1] for k in ends]; cy = [xyz[k, 2] for k in ends]
-cz = [xyz[k, 3] + (xyz[k, 3] > L / 2 ? 2.5 : -2.5) for k in ends]
+cz = [xyz[k, 3] for k in ends]                                   # arrow tips on the end nodes
 cw = [xyz[k, 3] > L / 2 ? -1.0 : 1.0 for k in ends]
+shaft = 2.0
+ax_ = Any[]; ay_ = Any[]; az_ = Any[]
+for (k, n) in enumerate(ends)
+    push!(ax_, cx[k]); push!(ay_, cy[k]); push!(az_, cz[k]); push!(ax_, cx[k]); push!(ay_, cy[k]); push!(az_, cz[k] - cw[k] * shaft)
+    push!(ax_, nothing); push!(ay_, nothing); push!(az_, nothing)
+end
 # mid-length section
 jm = (nz + 1) ÷ 2
 sec_traces = String[]
@@ -73,8 +79,9 @@ const data = [
   hoverinfo:'skip',name:'deformed shell',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},name:'uniform axial compression',hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(zeros(length(cx))))],w:[$(js(cw))],
-  sizemode:'absolute',sizeref:1.6,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,name:'uniform axial compression',hoverinfo:'skip',scene:'scene'},
+  sizemode:'absolute',sizeref:0.55,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
  $(join(sec_traces, ",\n "))
 ];
 const layout = {
