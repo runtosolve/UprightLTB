@@ -63,6 +63,8 @@ for ss in 1:2
     push!(sec_traces, "{type:'scatter',x:[$(join(xyz[rows, 1], ','))],y:[$(join(xyz[rows, 2], ','))],mode:'lines',line:{color:'#8a8a8a',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
     push!(sec_traces, "{type:'scatter',x:[$(join(def[rows, 1], ','))],y:[$(join(def[rows, 2], ','))],mode:'lines',line:{color:'#2a78d6',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
 end
+rx = maximum(def[:, 1]) - minimum(def[:, 1]); ry = maximum(def[:, 2]) - minimum(def[:, 2]); rz = L + 2 * shaft
+ar = round.([rx, ry, rz] ./ max(rx, ry, rz) .* 1.9; digits = 3)
 js(v) = join((x === nothing ? "null" : string(round(x, digits = 5)) for x in v), ',')
 
 html = """
@@ -86,8 +88,8 @@ const data = [
 ];
 const layout = {
  title:{text:'Global flexural-torsional buckling mode, two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips',x:0.02,xanchor:'left',font:{size:15}},
- scene:{domain:{x:[0,0.58],y:[0,1]},aspectmode:'data',xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
-        camera:{projection:{type:'orthographic'},eye:{x:-1.4,y:-1.7,z:0.45},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
+ scene:{domain:{x:[0,0.58],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
+        camera:{projection:{type:'orthographic'},eye:{x:-1.3,y:-1.6,z:0.5},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.2,0.8],title:{text:'Y (in)'},zeroline:false},
  showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
