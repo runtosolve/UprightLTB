@@ -54,6 +54,13 @@ for k in eLs
     push!(ax_, nothing); push!(ay_, nothing); push!(az_, nothing)
     push!(cx, L); push!(cy, x0 + len * tx); push!(cz, y0 + len * ty); push!(cu, tx); push!(cv, ty)
 end
+jm = (nz + 1) ÷ 2
+sec_traces = String[]
+for ss in 1:2
+    rows = [idx[(ss, ii, jm)] for ii in 1:nn]
+    push!(sec_traces, "{type:'scatter',x:[$(join(round.(xyz[rows, 1]; digits = 4), ','))],y:[$(join(round.(xyz[rows, 2]; digits = 4), ','))],mode:'lines',line:{color:'#8a8a8a',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
+    push!(sec_traces, "{type:'scatter',x:[$(join(round.(def[rows, 1]; digits = 4), ','))],y:[$(join(round.(def[rows, 2]; digits = 4), ','))],mode:'lines',line:{color:'#2a78d6',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
+end
 js(v) = join((x === nothing ? "null" : string(round(x, digits = 5)) for x in v), ',')
 rx_ = maximum(def[:, 1]) - minimum(def[:, 1]); ry_ = maximum(def[:, 2]) - minimum(def[:, 2])
 ar = round.([L, rx_, ry_] ./ max(rx_, ry_, L) .* 1.9; digits = 3)
@@ -75,13 +82,17 @@ const data = [
  {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(cu))],w:[$(js(cv))],
   sizemode:'absolute',sizeref:0.45,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(L)],y:[$(Xc)],z:[$(Yc)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'}
+ {type:'scatter3d',mode:'markers',x:[$(L)],y:[$(Xc)],z:[$(Yc)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ $(join(sec_traces, ",\n "))
 ];
 const layout = {
  title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (orange), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
- scene:{domain:{x:[0,1],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'Z (in), along member'},showbackground:false,showgrid:false,zeroline:false},yaxis:{title:{text:'X (in)'},showbackground:false,showgrid:false,zeroline:false},zaxis:{title:{text:'Y (in)'},showbackground:false,showgrid:false,zeroline:false},
-        camera:{projection:{type:'orthographic'},eye:{x:1.85,y:-1.85,z:1.85},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
- showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ scene:{domain:{x:[0,0.6],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'Z (in)'},showbackground:false,showgrid:false,zeroline:false},yaxis:{visible:false},zaxis:{visible:false},
+        camera:{projection:{type:'orthographic'},eye:{x:-1.85,y:-1.85,z:1.85},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
+ showlegend:false,
+ xaxis:{domain:[0.66,0.98],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
+ yaxis:{domain:[0.2,0.8],title:{text:'Y (in)'},zeroline:false},
+ margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
 """
