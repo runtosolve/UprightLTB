@@ -39,6 +39,11 @@ inweld = [any(near(z, c, weld_length / 2) for c in centers) for z in xyz[:, 3]]
 w = findall(corner .& inweld .& (xyz[:, 3] .> 0) .& (xyz[:, 3] .< L))
 # fixed end z = 0 (all nodes fixed in X, Y) and twisted end z = L (rigid rotation about (Xc, Yc))
 e0 = findall(xyz[:, 3] .≈ 0.0); eL = findall(xyz[:, 3] .≈ L)
+ox = Any[]; oy = Any[]; oz = Any[]                 # section outline at the fixed end
+for ss in 1:2
+    rows = [idx[(ss, ii, 1)] for ii in 1:nn]
+    append!(ox, xyz[rows, 1]); append!(oy, xyz[rows, 2]); append!(oz, xyz[rows, 3]); push!(ox, nothing); push!(oy, nothing); push!(oz, nothing)
+end
 eLs = eL[1:3:end]
 ax_ = Any[]; ay_ = Any[]; az_ = Any[]; cx = Float64[]; cy = Float64[]; cz = Float64[]; cu = Float64[]; cv = Float64[]
 for k in eLs
@@ -49,23 +54,6 @@ for k in eLs
     push!(ax_, nothing); push!(ay_, nothing); push!(az_, nothing)
     push!(cx, x0 + len * tx); push!(cy, y0 + len * ty); push!(cz, L); push!(cu, tx); push!(cv, ty)
 end
-# twist profile inset
-tp = readdlm(joinpath(@__DIR__, "twist_profile_built_up.csv"), ','; skipstart = 1)
-zt = Float64.(tp[:, 1]); b1 = Float64.(tp[:, 2]); b2 = Float64.(tp[:, 3]); wst = Int.(tp[:, 4])
-function weld_bands(zt, wst)
-    bands = String[]; j = 1
-    while j <= length(zt)
-        if wst[j] == 1
-            k = j; while k < length(zt) && wst[k+1] == 1; k += 1; end
-            push!(bands, "{type:'rect',xref:'x',yref:'paper',x0:$(zt[j]-0.25),x1:$(zt[k]+0.25),y0:0.08,y1:0.86,fillcolor:'#f0efec',line:{width:0},layer:'below'}")
-            j = k + 1
-        else
-            j += 1
-        end
-    end
-    return bands
-end
-bands = weld_bands(zt, wst)
 js(v) = join((x === nothing ? "null" : string(round(x, digits = 5)) for x in v), ',')
 rx_ = maximum(def[:, 1]) - minimum(def[:, 1]); ry_ = maximum(def[:, 2]) - minimum(def[:, 2])
 ar = round.([rx_, ry_, L] ./ max(rx_, ry_, L) .* 1.9; digits = 3)
@@ -80,26 +68,20 @@ html = """
 const data = [
  {type:'mesh3d',x:[$(js(def[:, 1]))],y:[$(js(def[:, 2]))],z:[$(js(def[:, 3]))],i:[$(join(I, ','))],j:[$(join(J, ','))],k:[$(join(K, ','))],
   intensity:[$(js(cval))],colorscale:'Viridis',cmin:0,cmax:1,flatshading:true,lighting:{ambient:0.9,diffuse:0.2,specular:0.0},
-  colorbar:{title:{text:'normalized<br>in-plane<br>displacement'},len:0.5,x:0.5},hoverinfo:'skip',showlegend:false,scene:'scene'},
+  colorbar:{title:{text:'normalized<br>in-plane<br>displacement'},len:0.5,x:0.9},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(js(xyz[e0, 1]))],y:[$(js(xyz[e0, 2]))],z:[$(js(xyz[e0, 3]))],marker:{color:'#0b0b0b',size:3,symbol:'square'},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'lines',x:[$(js(ox))],y:[$(js(oy))],z:[$(js(oz))],line:{color:'#0b0b0b',width:5},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(cu))],v:[$(js(cv))],w:[$(js(zeros(length(cx))))],
   sizemode:'absolute',sizeref:0.45,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(Xc)],y:[$(Yc)],z:[$(L)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter',x:[$(js(zt))],y:[$(js(b1))],mode:'lines',line:{color:'#2a78d6',width:2.5},name:'C1 (lips welded to C2 web)',xaxis:'x',yaxis:'y'},
- {type:'scatter',x:[$(js(zt))],y:[$(js(b2))],mode:'lines',line:{color:'#eb6834',width:2.5,dash:'dot'},name:'C2 (offset by B = 3 in)',xaxis:'x',yaxis:'y'},
- {type:'scatter',x:[0,$(L)],y:[0,1],mode:'lines',line:{color:'#52514e',width:1,dash:'dash'},name:'uniform twist βo z / L',xaxis:'x',yaxis:'y'}
+ {type:'scatter3d',mode:'markers',x:[$(Xc)],y:[$(Yc)],z:[$(L)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'}
 ];
 const layout = {
- title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (twist restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
- scene:{domain:{x:[0,0.55],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
+ title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (orange), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
+ scene:{domain:{x:[0,1],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:-2.0,y:-2.4,z:0.75},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
- xaxis:{domain:[0.62,0.98],title:{text:'distance along member z (in)'},zeroline:false},
- yaxis:{domain:[0.08,0.86],title:{text:'β / β<sub>o</sub>, angle of twist'},zeroline:false},
- shapes:[$(join(bands, ","))],
- legend:{x:0.63,y:0.85,bgcolor:'rgba(255,255,255,0.7)'},margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
 """
