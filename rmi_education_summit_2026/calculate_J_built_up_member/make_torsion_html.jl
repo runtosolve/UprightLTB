@@ -80,7 +80,7 @@ const data = [
 const layout = {
  title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (orange), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
  scene:{domain:{x:[0,1],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
-        camera:{projection:{type:'orthographic'},eye:{x:-2.0,y:-2.4,z:0.75},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
+        camera:{projection:{type:'orthographic'},eye:{x:-1.85,y:-1.85,z:1.85},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
