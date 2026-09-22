@@ -49,21 +49,6 @@ rarc = 2.6; zarc = L + 1.0
 ax_ = [zarc for φ in φs]; ay_ = [Xc + rarc * cos(φ) for φ in φs]; az_ = [Yc + rarc * sin(φ) for φ in φs]
 φe = φs[end]
 cx = [zarc]; cy = [Xc + rarc * cos(φe)]; cz = [Yc + rarc * sin(φe)]; cu = [-sin(φe)]; cv = [cos(φe)]
-ox = Any[]; oy = Any[]; oz = Any[]                 # section outline at the fixed end
-for ss in 1:2
-    rows = [idx[(ss, ii, 1)] for ii in 1:nn]
-    append!(ox, xyz[rows, 3]); append!(oy, xyz[rows, 1]); append!(oz, xyz[rows, 2]); push!(ox, nothing); push!(oy, nothing); push!(oz, nothing)
-end
-eLs = eL[1:3:end]
-ax_ = Any[]; ay_ = Any[]; az_ = Any[]; cx = Float64[]; cy = Float64[]; cz = Float64[]; cu = Float64[]; cv = Float64[]
-for k in eLs
-    rx = xyz[k, 1] - Xc; ry = xyz[k, 2] - Yc; rr = hypot(rx, ry); rr < 0.3 && continue
-    tx = -ry / rr; ty = rx / rr                      # tangential direction of the applied rotation
-    x0, y0 = def[k, 1], def[k, 2]; len = 1.1
-    push!(ax_, L); push!(ay_, x0); push!(az_, y0); push!(ax_, L); push!(ay_, x0 + len * tx); push!(az_, y0 + len * ty)
-    push!(ax_, nothing); push!(ay_, nothing); push!(az_, nothing)
-    push!(cx, L); push!(cy, x0 + len * tx); push!(cz, y0 + len * ty); push!(cu, tx); push!(cv, ty)
-end
 jm = (nz + 1) ÷ 2
 sec_traces = String[]
 for ss in 1:2
