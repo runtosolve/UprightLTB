@@ -44,7 +44,7 @@ for ss in 1:2
     rows = [idx[(ss, ii, 1)] for ii in 1:nn]
     append!(ox, xyz[rows, 3]); append!(oy, xyz[rows, 1]); append!(oz, xyz[rows, 2]); push!(ox, nothing); push!(oy, nothing); push!(oz, nothing)
 end
-rarc = 2.6; zarc = L + 1.0
+rarc = 3.6; zarc = L + 1.5
 φs = range(-0.25π, 1.2π, 80)
 ax_ = [zarc for φ in φs]; ay_ = [Xc + rarc * cos(φ) for φ in φs]; az_ = [Yc + rarc * sin(φ) for φ in φs]
 φe = φs[end]
@@ -74,14 +74,14 @@ const data = [
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 3]))],y:[$(js(def[w, 1]))],z:[$(js(def[w, 2]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ox))],y:[$(js(oy))],z:[$(js(oz))],line:{color:'#0b0b0b',width:5},showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:7},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eda100',width:10},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(cu))],w:[$(js(cv))],
-  sizemode:'absolute',sizeref:1.1,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(L)],y:[$(Xc)],z:[$(Yc)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'},
+  sizemode:'absolute',sizeref:1.6,anchor:'tip',colorscale:[[0,'#eda100'],[1,'#eda100']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'markers',x:[$(L)],y:[$(Xc)],z:[$(Yc)],marker:{color:'#eda100',size:7,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'},
  $(join(sec_traces, ",\n "))
 ];
 const layout = {
- title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (orange), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
+ title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
  scene:{domain:{x:[0,0.74],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'Z (in)'},showbackground:false,showgrid:false,zeroline:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:-1.35,y:-1.35,z:1.35},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  showlegend:false,
