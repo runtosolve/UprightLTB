@@ -63,7 +63,7 @@ html = """
 <!doctype html>
 <html><head><meta charset="utf-8"><title>Built-up upright global FT buckling mode</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<style>body{margin:0;font-family:Helvetica,Arial,sans-serif;background:#fff}#plot{width:100vw;height:96vh}</style></head>
+<style>html,body{margin:0;height:100%;font-family:Helvetica,Arial,sans-serif;background:#fff}#plot{width:min(100vw,1400px);height:min(92vh,780px);margin:0 auto}</style></head>
 <body><div id="plot"></div>
 <script>
 const data = [
@@ -72,19 +72,19 @@ const data = [
   lighting:{ambient:0.9,diffuse:0.2,specular:0.0},colorbar:{title:{text:'normalized<br>displacement'},len:0.5,x:0.5},
   hoverinfo:'skip',name:'deformed shell',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},name:'welds (3 in, rigid ties)',scene:'scene'},
+ {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(zeros(length(cx))))],w:[$(js(cw))],
   sizemode:'absolute',sizeref:1.6,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,name:'uniform axial compression',hoverinfo:'skip',scene:'scene'},
  $(join(sec_traces, ",\n "))
 ];
 const layout = {
- title:{text:'Global flexural-torsional buckling mode, two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips',x:0.02,xanchor:'left',font:{size:17}},
+ title:{text:'Global flexural-torsional buckling mode, two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips',x:0.02,xanchor:'left',font:{size:15}},
  scene:{domain:{x:[0,0.55],y:[0,1]},aspectmode:'data',xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{eye:{x:-1.6,y:-1.9,z:0.5},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.2,0.8],title:{text:'Y (in)'},zeroline:false},
  annotations:[{text:'cross section at mid-length: gray undeformed, blue buckled (× $(round(sc, sigdigits = 3)))',x:0.8,y:0.83,xref:'paper',yref:'paper',showarrow:false,font:{size:13,color:'#52514e'}}],
- legend:{x:0.02,y:0.02,bgcolor:'rgba(255,255,255,0.7)'},margin:{l:40,r:20,t:70,b:40},paper_bgcolor:'#fff'};
+ legend:{x:0.02,y:0.02,bgcolor:'rgba(255,255,255,0.7)'},margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
 """

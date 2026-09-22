@@ -13,7 +13,7 @@ and [QuadShellFiniteElement.jl](https://github.com/runtosolve/QuadShellFiniteEle
   the static WGLMakie export (`mode_global_1_wglmakie_static.html`, snapshot only — WGLMakie's camera needs a live Julia
   session, see `show_mode_wglmakie.jl`), and summary figures.
 
-**Hosted mode shape:** https://runtosolve.github.io/BuiltUpUprightTorsion/
+**Hosted mode shape:** https://runtosolve.github.io/UprightLTB/
 
 Each study folder has its own README with the model description, results and file list. Run the scripts from their
 folder with `julia --project=.` (the Project/Manifest reference packages developed under `~/.julia/dev`).
