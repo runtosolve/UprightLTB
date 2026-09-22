@@ -24,7 +24,7 @@ for jj in 1:nz-1, ss in 1:2, ii in 1:nn-1
 end
 ex = Any[]; ey = Any[]; ez = Any[]
 function seg!(a, b)
-    push!(ex, def[a, 1]); push!(ey, def[a, 2]); push!(ez, def[a, 3]); push!(ex, def[b, 1]); push!(ey, def[b, 2]); push!(ez, def[b, 3])
+    push!(ex, def[a, 3]); push!(ey, def[a, 1]); push!(ez, def[a, 2]); push!(ex, def[b, 3]); push!(ey, def[b, 1]); push!(ez, def[b, 2])
     push!(ex, nothing); push!(ey, nothing); push!(ez, nothing)
 end
 for jj in 1:nz, ss in 1:2, ii in 1:nn-1; seg!(idx[(ss, ii, jj)], idx[(ss, ii + 1, jj)]); end
@@ -42,7 +42,7 @@ e0 = findall(xyz[:, 3] .≈ 0.0); eL = findall(xyz[:, 3] .≈ L)
 ox = Any[]; oy = Any[]; oz = Any[]                 # section outline at the fixed end
 for ss in 1:2
     rows = [idx[(ss, ii, 1)] for ii in 1:nn]
-    append!(ox, xyz[rows, 1]); append!(oy, xyz[rows, 2]); append!(oz, xyz[rows, 3]); push!(ox, nothing); push!(oy, nothing); push!(oz, nothing)
+    append!(ox, xyz[rows, 3]); append!(oy, xyz[rows, 1]); append!(oz, xyz[rows, 2]); push!(ox, nothing); push!(oy, nothing); push!(oz, nothing)
 end
 eLs = eL[1:3:end]
 ax_ = Any[]; ay_ = Any[]; az_ = Any[]; cx = Float64[]; cy = Float64[]; cz = Float64[]; cu = Float64[]; cv = Float64[]
@@ -50,13 +50,13 @@ for k in eLs
     rx = xyz[k, 1] - Xc; ry = xyz[k, 2] - Yc; rr = hypot(rx, ry); rr < 0.3 && continue
     tx = -ry / rr; ty = rx / rr                      # tangential direction of the applied rotation
     x0, y0 = def[k, 1], def[k, 2]; len = 1.1
-    push!(ax_, x0); push!(ay_, y0); push!(az_, L); push!(ax_, x0 + len * tx); push!(ay_, y0 + len * ty); push!(az_, L)
+    push!(ax_, L); push!(ay_, x0); push!(az_, y0); push!(ax_, L); push!(ay_, x0 + len * tx); push!(az_, y0 + len * ty)
     push!(ax_, nothing); push!(ay_, nothing); push!(az_, nothing)
-    push!(cx, x0 + len * tx); push!(cy, y0 + len * ty); push!(cz, L); push!(cu, tx); push!(cv, ty)
+    push!(cx, L); push!(cy, x0 + len * tx); push!(cz, y0 + len * ty); push!(cu, tx); push!(cv, ty)
 end
 js(v) = join((x === nothing ? "null" : string(round(x, digits = 5)) for x in v), ',')
 rx_ = maximum(def[:, 1]) - minimum(def[:, 1]); ry_ = maximum(def[:, 2]) - minimum(def[:, 2])
-ar = round.([rx_, ry_, L] ./ max(rx_, ry_, L) .* 1.9; digits = 3)
+ar = round.([L, rx_, ry_] ./ max(rx_, ry_, L) .* 1.9; digits = 3)
 
 html = """
 <!doctype html>
@@ -66,21 +66,21 @@ html = """
 <body><div id="plot"></div>
 <script>
 const data = [
- {type:'mesh3d',x:[$(js(def[:, 1]))],y:[$(js(def[:, 2]))],z:[$(js(def[:, 3]))],i:[$(join(I, ','))],j:[$(join(J, ','))],k:[$(join(K, ','))],
+ {type:'mesh3d',x:[$(js(def[:, 3]))],y:[$(js(def[:, 1]))],z:[$(js(def[:, 2]))],i:[$(join(I, ','))],j:[$(join(J, ','))],k:[$(join(K, ','))],
   intensity:[$(js(cval))],colorscale:'Viridis',cmin:0,cmax:1,flatshading:true,lighting:{ambient:0.9,diffuse:0.2,specular:0.0},
   showscale:false,hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'markers',x:[$(js(def[w, 3]))],y:[$(js(def[w, 1]))],z:[$(js(def[w, 2]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ox))],y:[$(js(oy))],z:[$(js(oz))],line:{color:'#0b0b0b',width:5},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(cu))],v:[$(js(cv))],w:[$(js(zeros(length(cx))))],
+ {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(cu))],w:[$(js(cv))],
   sizemode:'absolute',sizeref:0.45,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'markers',x:[$(Xc)],y:[$(Yc)],z:[$(L)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'}
+ {type:'scatter3d',mode:'markers',x:[$(L)],y:[$(Xc)],z:[$(Yc)],marker:{color:'#eb6834',size:6,symbol:'diamond'},showlegend:false,hoverinfo:'skip',scene:'scene'}
 ];
 const layout = {
  title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (black outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (orange), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
- scene:{domain:{x:[0,1],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'X (in)'},showbackground:false,showgrid:false,zeroline:false},yaxis:{title:{text:'Y (in)'},showbackground:false,showgrid:false,zeroline:false},zaxis:{title:{text:'Z (in)'},showbackground:false,showgrid:false,zeroline:false},
-        camera:{projection:{type:'orthographic'},eye:{x:-1.85,y:-1.85,z:1.85},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
+ scene:{domain:{x:[0,1],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'Z (in), along member'},showbackground:false,showgrid:false,zeroline:false},yaxis:{title:{text:'X (in)'},showbackground:false,showgrid:false,zeroline:false},zaxis:{title:{text:'Y (in)'},showbackground:false,showgrid:false,zeroline:false},
+        camera:{projection:{type:'orthographic'},eye:{x:1.85,y:-1.85,z:1.85},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
