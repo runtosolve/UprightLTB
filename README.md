@@ -16,8 +16,8 @@ and [QuadShellFiniteElement.jl](https://github.com/runtosolve/QuadShellFiniteEle
 **Hosted pages**
 
 - Global flexural-torsional buckling mode (L = 44 in): https://runtosolve.github.io/UprightLTB/
-- Static twist study for J_eff (L = 111 in, 3 in welds at 18 in), with boundary conditions, loading and twist profile:
-  https://runtosolve.github.io/UprightLTB/torsion.html
+- Static twist study for J_eff (L = 111 in, 3 in welds at 18 in) is hosted separately at
+  https://runtosolve.github.io/Upright_torsion_J_study/ (repository runtosolve/Upright_torsion_J_study).
 
 Each study folder has its own README with the model description, results and file list. Run the scripts from their
 folder with `julia --project=.` (the Project/Manifest reference packages developed under `~/.julia/dev`).
