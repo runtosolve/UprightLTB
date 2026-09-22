@@ -175,7 +175,8 @@ function built_up_J(; welds = :abaqus, contact = false, n_flat = 4, n_corner = 5
         @printf("  β₁(L)/βo = %.4f, β₂(L)/βo = %.4f;  linear-fit R² of β₁(z) = %.5f\n", β[end, 1] / βo, β[end, 2] / βo, R2)
         @printf("  J_eff = T L / (G βo) = %.5e in⁴\n", J_eff)
     end
-    return (; welds, contact, L, weld_length, n_welds = length(weld_stations), J_eff, T, T0, Fx, Fy, Z, β, welded_station, ndofs = ndofs(dh), n_ties, n_contact)
+    return (; welds, contact, L, weld_length, n_welds = length(weld_stations), J_eff, T, T0, Fx, Fy, Z, β, welded_station, ndofs = ndofs(dh), n_ties, n_contact,
+              u, grid, nd, id, nn, nz, Xs, Ys, Xc, Yc)
 end
 
 # ---------------------------------------------------------------------------------------------
