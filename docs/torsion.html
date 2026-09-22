@@ -21,12 +21,12 @@ const data = [
  {type:'scatter',x:[5.8191,5.7985,5.7778,5.7572,5.737,5.7211,5.6913,5.6501,5.6014,5.5473,4.8997,4.2492,3.5987,2.9511,2.8993,2.8576,2.8272,2.8109,2.8108,2.9081,3.0056,3.1032,3.2002,3.2162,3.246,3.2872,3.3359,3.39,4.0376,4.6881,5.3386,5.9862,6.038,6.0797,6.1101,6.1264,6.1265,6.1061,6.0855,6.0648,6.0441],y:[2.877,3.0148,3.1525,3.2903,3.4251,3.4769,3.5186,3.5491,3.5653,3.5654,3.4682,3.3706,3.273,3.176,3.16,3.1302,3.089,3.0404,2.9862,2.3386,1.6881,1.0376,0.39,0.3383,0.2966,0.2661,0.2499,0.2498,0.347,0.4446,0.5422,0.6392,0.6552,0.685,0.7262,0.7748,0.829,0.9638,1.1015,1.2393,1.377],mode:'lines',line:{color:'#2a78d6',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}
 ];
 const layout = {
- title:{text:'Static twist of the two-C welded upright, L = 111 in, 7 welds × 3 in at 18 in: z = 0 fixed in X, Y (yellow outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = 0.768 in⁴',x:0.02,xanchor:'left',font:{size:14}},
+ title:{text:'Static twist of the two-C welded upright, L = 111 in, 7 welds × 3 in at 18 in;  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = 0.768 in⁴<br>z = 0 fixed in X, Y (yellow outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow arrow), warping free',x:0.02,y:0.97,xanchor:'left',yanchor:'top',font:{size:14}},
  scene:{domain:{x:[0,0.74],y:[0,1]},aspectmode:'manual',aspectratio:{x:1.9,y:0.115,z:0.079},xaxis:{title:{text:'Z (in)'},showbackground:false,showgrid:false,zeroline:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:1.50,y:-1.56,z:-1.44},center:{x:0,y:0,z:0},up:{x:0.384,y:-0.399,z:0.833}},dragmode:'orbit'},
  showlegend:false,
  xaxis:{domain:[0.78,0.99],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.3,0.7],title:{text:'Y (in)'},zeroline:false},
- margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ margin:{l:30,r:20,t:80,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>

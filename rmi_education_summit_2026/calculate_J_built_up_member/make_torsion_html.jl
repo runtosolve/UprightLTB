@@ -81,13 +81,13 @@ const data = [
  $(join(sec_traces, ",\n "))
 ];
 const layout = {
- title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in: z = 0 fixed in X, Y (yellow outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow), warping free.  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴',x:0.02,xanchor:'left',font:{size:14}},
+ title:{text:'Static twist of the two-C welded upright, L = $(Int(L)) in, $(Int(n_welds)) welds × $(Int(weld_length)) in at $(Int(weld_spacing)) in;  J<sub>eff</sub> = T L / (G β<sub>o</sub>) = $(round(J_eff, digits = 3)) in⁴<br>z = 0 fixed in X, Y (yellow outline: twist and translation restrained, warping free); rigid twist β<sub>o</sub> applied at z = L about (1.5, 1.5) (yellow arrow), warping free',x:0.02,y:0.97,xanchor:'left',yanchor:'top',font:{size:14}},
  scene:{domain:{x:[0,0.74],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{title:{text:'Z (in)'},showbackground:false,showgrid:false,zeroline:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:1.50,y:-1.56,z:-1.44},center:{x:0,y:0,z:0},up:{x:0.384,y:-0.399,z:0.833}},dragmode:'orbit'},
  showlegend:false,
  xaxis:{domain:[0.78,0.99],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.3,0.7],title:{text:'Y (in)'},zeroline:false},
- margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ margin:{l:30,r:20,t:80,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
 """
