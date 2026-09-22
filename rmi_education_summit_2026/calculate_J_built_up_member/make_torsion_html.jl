@@ -68,7 +68,7 @@ html = """
 const data = [
  {type:'mesh3d',x:[$(js(def[:, 1]))],y:[$(js(def[:, 2]))],z:[$(js(def[:, 3]))],i:[$(join(I, ','))],j:[$(join(J, ','))],k:[$(join(K, ','))],
   intensity:[$(js(cval))],colorscale:'Viridis',cmin:0,cmax:1,flatshading:true,lighting:{ambient:0.9,diffuse:0.2,specular:0.0},
-  colorbar:{title:{text:'normalized<br>in-plane<br>displacement'},len:0.5,x:0.9},hoverinfo:'skip',showlegend:false,scene:'scene'},
+  showscale:false,hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ox))],y:[$(js(oy))],z:[$(js(oz))],line:{color:'#0b0b0b',width:5},showlegend:false,hoverinfo:'skip',scene:'scene'},
