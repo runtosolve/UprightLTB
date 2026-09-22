@@ -79,7 +79,7 @@ const data = [
   hoverinfo:'skip',name:'deformed shell',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
- {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},name:'uniform axial compression',hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(zeros(length(cx))))],w:[$(js(cw))],
   sizemode:'absolute',sizeref:0.55,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
  $(join(sec_traces, ",\n "))
@@ -90,7 +90,7 @@ const layout = {
         camera:{eye:{x:-1.6,y:-1.9,z:0.5},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.2,0.8],title:{text:'Y (in)'},zeroline:false},
- legend:{x:0.02,y:0.02,bgcolor:'rgba(255,255,255,0.7)'},margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
 """
