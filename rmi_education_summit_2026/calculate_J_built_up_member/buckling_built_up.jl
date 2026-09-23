@@ -59,7 +59,7 @@ end
 Returns critical loads P_cr (lbf, ascending), the corresponding full-dof mode vectors, the grid, node dof
 map, and per-mode classification data.
 """
-function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, mode = :all, nev = 6,
+function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, mode = :all, nev = 6, restrain = Symbol[], twist_center = nothing,
                              n_flat = 4, n_corner = 5, n_z = Int(round(2L)), Cs = Q.DEFAULT_SHEAR_RELAXATION, verbose = true)
 
     X1, Y1 = centerline(shape; n_flat, n_corner)
@@ -100,14 +100,40 @@ function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, m
         end
     end
     if mode == :global
-        # rigid in-plane cross section per interior station: u_x,i = u_x,m − θz,m (y_i − y_m), u_y,i = u_y,m + θz,m (x_i − x_m)
+        # rigid in-plane cross section per interior station: u_x,i = u_x,m − θz,m (y_i − y_m), u_y,i = u_y,m + θz,m (x_i − x_m).
+        # `restrain` removes rigid-section dofs (:u, :v, :θ): a restrained component is prescribed zero on every node
+        # and dropped from the ties, so affine masters are always free dofs (Ferrite does not allow prescribed masters).
+        ru = :u in restrain; rv = :v in restrain; rθ = :θ in restrain
+        interior_nodes = Set(id(s, i, j) for j in interior for s in 1:2 for i in 1:nn)
+        if ru && rv && !rθ && twist_center !== nothing
+            # pure torsion about a given point (the shear center): every node, master included, follows θz,m
+            xs_, ys_ = twist_center
+            for j in interior
+                m = id(1, i_webmid, j); dm = nd[m]
+                for s in 1:2, i in 1:nn
+                    n = id(s, i, j); dn = nd[n]; p = grid.nodes[n].x
+                    add!(ch, AffineConstraint(dn[1], [dm[6] => -(p[2] - ys_)], 0.0))
+                    add!(ch, AffineConstraint(dn[2], [dm[6] => (p[1] - xs_)], 0.0))
+                end
+            end
+            ru = rv = false; interior = 1:0                       # nothing left for the generic block below
+        end
+        ru && add!(ch, Dirichlet(:u, interior_nodes, (x, t) -> [0.0], [1]))
+        rv && add!(ch, Dirichlet(:u, interior_nodes, (x, t) -> [0.0], [2]))
         for j in interior
             m = id(1, i_webmid, j); xm = grid.nodes[m].x; dm = nd[m]
+            rθ && add!(ch, Dirichlet(:θ, Set([m]), (x, t) -> [0.0], [3]))
             for s in 1:2, i in 1:nn
                 n = id(s, i, j); n == m && continue
                 r = grid.nodes[n].x - xm; dn = nd[n]
-                add!(ch, AffineConstraint(dn[1], [dm[1] => 1.0, dm[6] => -r[2]], 0.0))
-                add!(ch, AffineConstraint(dn[2], [dm[2] => 1.0, dm[6] => r[1]], 0.0))
+                if !ru
+                    terms = Pair{Int,Float64}[dm[1] => 1.0]; rθ || push!(terms, dm[6] => -r[2])
+                    add!(ch, AffineConstraint(dn[1], terms, 0.0))
+                end
+                if !rv
+                    terms = Pair{Int,Float64}[dm[2] => 1.0]; rθ || push!(terms, dm[6] => r[1])
+                    add!(ch, AffineConstraint(dn[2], terms, 0.0))
+                end
             end
         end
     end
@@ -177,7 +203,7 @@ function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, m
                     k, P, P / 1000, P / A_total / 1000, c.participation, c.U / maximum(abs, [c.U, c.V, 1e-30]), c.V / maximum(abs, [c.U, c.V, 1e-30]), c.twist_to_translation)
         end
     end
-    return (; P_cr, modes, info, grid, nd, id, nn, nz, Xs, Ys, Z, A_total, weld_locations, weld_stations, ndofs = ndofs(dh))
+    return (; P_cr, modes, info, grid, nd, id, nn, nz, Xs, Ys, Z, A_total, weld_locations, weld_stations, ndofs = ndofs(dh), K0, ch, dh, i_webmid, j_mid)
 end
 
 # write a mode shape (node coordinates + displacements) for plotting

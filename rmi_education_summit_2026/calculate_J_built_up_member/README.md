@@ -141,6 +141,20 @@ intermittently welded pair (J_eff ≈ 0.77 in⁴) and its warping. Pure x-flexur
 the composite Euler value, the loss of composite action between welds. At 44 in the member is governed
 by local buckling (101 kips, 69 ksi), so the global FT load is well above the local one.
 
+Analytical comparison (`ft_analytical_check.jl`, results in `ft_analytical_check.csv`). The section is symmetric
+about its horizontal axis, so Timoshenko's flexural-torsional formula applies with bending about x coupled to
+torsion: P_FT = [(P_ey + P_t) − √((P_ey + P_t)² − 4 β P_ey P_t)] / (2β), β = 1 − (x_o/r_o)². Constrained
+rigid-section eigen-analyses give the shell's own P_ey = 354.0 kips (Euler 351.5, the composite I_x is exact
+because both C's share the centroid height) and P_ex = 637.6 kips (Euler 772.4, partial composite action).
+The shear center by statics (zero twist under a mid-length transverse force on the rigid-section model) is at
+x = 0.39 in, x_o = −2.36 in; the FT mode ratio implies a rotation center at x ≈ −1.9 in instead, i.e. the
+"shear center" of the intermittently welded pair is not a unique section property. Timoshenko's formula gives
+133 kips with the shell P_t about the static shear center (176 kips) and 115 to 248 kips depending on which x_o
+and torsional stiffness are assumed, against 160.6 kips from the shell. The shell FT mode is nearly a pure
+twist about x ≈ −1.9 in; written as P = G J_eq / (A r²) about that point it implies J_eq ≈ 0.55 in⁴, about
+72 % of the J_eff = 0.77 in⁴ from the static twist test, so J_eff used directly in a torsional buckling formula
+overestimates the buckling load at this length.
+
 Mode shape: `mode_global_1_wglmakie.html` (interactive WGLMakie scene, standalone) and `mode_global_1.png`
 (CairoMakie), both from `plot_mode_wglmakie.jl`; mode data in `mode_global_1.csv`, `mode_global_2.csv`,
 `mode_all_1.csv`; loads in `buckling_results.csv`.
@@ -156,3 +170,4 @@ Mode shape: `mode_global_1_wglmakie.html` (interactive WGLMakie scene, standalon
 | `make_figure_spacing_comparison.jl` | `weld_spacing_comparison.png`: Ferrite J_eff vs. the Tlumak equation vs. weld spacing, 3 in welds |
 | `buckling_built_up.jl` | eigenbuckling at L = 44 in (global rigid-section and unconstrained); writes `buckling_results.csv`, `mode_*.csv`, `buckling_log.txt` |
 | `plot_mode_wglmakie.jl` | 3D mode shape: `mode_global_1_wglmakie.html` (WGLMakie) and `mode_global_1.png` |
+| `ft_analytical_check.jl` | Timoshenko FT formula vs. the shell: constrained pure-torsion / pure-flexure eigen loads, static shear center; writes `ft_analytical_check.csv` |
