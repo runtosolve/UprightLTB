@@ -11,6 +11,8 @@ analysis = length(ARGS) >= 3 ? ARGS[3] : "global"          # which row of buckli
 row = findfirst(i -> strip(String(res[i, 1])) == analysis && Int(res[i, 2]) == 1, 1:size(res, 1))
 P = Float64(res[row, 4])
 modelnote = analysis == "all" ? "unconstrained shell" : "rigid-section (global) shell model"
+extra = length(ARGS) >= 4 ? ARGS[4] : ""                    # extra title text (e.g. bracing description)
+braces = length(ARGS) >= 5 ? parse.(Float64, split(ARGS[5], ",")) : Float64[]   # brace stations to draw
 weld_length = 3.0; weld_spacing = 18.0; B = 3.0; D = 3.0 - 0.074; R = 0.199; scale_frac = 0.035
 
 d = readdlm(path, ','; skipstart = 1)
@@ -59,6 +61,15 @@ for (k, n) in enumerate(ends)
     push!(ax_, cx[k]); push!(ay_, cy[k]); push!(az_, cz[k]); push!(ax_, cx[k]); push!(ay_, cy[k]); push!(az_, cz[k] - cw[k] * shaft)
     push!(ax_, nothing); push!(ay_, nothing); push!(az_, nothing)
 end
+# brace outlines: section polylines of both shapes at the stations nearest each brace z (undeformed)
+bx = Any[]; by = Any[]; bz = Any[]
+for zb in braces
+    jb = argmin(abs.([xyz[idx[(1, 1, j)], 3] for j in 1:nz] .- zb))
+    for ss in 1:2
+        rows = [idx[(ss, ii, jb)] for ii in 1:nn]
+        append!(bx, xyz[rows, 1]); append!(by, xyz[rows, 2]); append!(bz, xyz[rows, 3]); push!(bx, nothing); push!(by, nothing); push!(bz, nothing)
+    end
+end
 # mid-length section
 jm = (nz + 1) ÷ 2
 sec_traces = String[]
@@ -85,13 +96,14 @@ const data = [
   hoverinfo:'skip',name:'deformed shell',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ex))],y:[$(js(ey))],z:[$(js(ez))],line:{color:'rgba(0,0,0,0.35)',width:1},hoverinfo:'skip',showlegend:false,scene:'scene'},
  {type:'scatter3d',mode:'markers',x:[$(js(def[w, 1]))],y:[$(js(def[w, 2]))],z:[$(js(def[w, 3]))],marker:{color:'#e34948',size:3.5},showlegend:false,hoverinfo:'skip',scene:'scene'},
+ {type:'scatter3d',mode:'lines',x:[$(js(bx))],y:[$(js(by))],z:[$(js(bz))],line:{color:'#008300',width:7},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'scatter3d',mode:'lines',x:[$(js(ax_))],y:[$(js(ay_))],z:[$(js(az_))],line:{color:'#eb6834',width:4},showlegend:false,hoverinfo:'skip',scene:'scene'},
  {type:'cone',x:[$(js(cx))],y:[$(js(cy))],z:[$(js(cz))],u:[$(js(zeros(length(cx))))],v:[$(js(zeros(length(cx))))],w:[$(js(cw))],
   sizemode:'absolute',sizeref:0.55,anchor:'tip',colorscale:[[0,'#eb6834'],[1,'#eb6834']],showscale:false,showlegend:false,hoverinfo:'skip',scene:'scene'},
  $(join(sec_traces, ",\n "))
 ];
 const layout = {
- title:{text:'Global flexural-torsional buckling mode, two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips ($(modelnote))',x:0.02,xanchor:'left',font:{size:15}},
+ title:{text:'Global flexural-torsional buckling mode, two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips ($(modelnote))$(extra)',x:0.02,xanchor:'left',font:{size:15}},
  scene:{domain:{x:[0,0.58],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:-2.0,y:-2.4,z:0.75},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'X (in)'},scaleanchor:'y',scaleratio:1,zeroline:false},

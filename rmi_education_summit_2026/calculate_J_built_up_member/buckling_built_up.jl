@@ -60,7 +60,7 @@ end
 Returns critical loads P_cr (lbf, ascending), the corresponding full-dof mode vectors, the grid, node dof
 map, and per-mode classification data.
 """
-function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, mode = :all, nev = 6, restrain = Symbol[], twist_center = nothing,
+function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, mode = :all, nev = 6, restrain = Symbol[], twist_center = nothing, braces = Float64[], brace_components = [1],
                              n_flat = 4, n_corner = 5, n_z = Int(round(2L)), Cs = Q.DEFAULT_SHEAR_RELAXATION, verbose = true)
 
     X1, Y1 = centerline(shape; n_flat, n_corner)
@@ -83,6 +83,12 @@ function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, m
     endL = Set(id(s, i, nz) for s in 1:2 for i in 1:nn)
     add!(ch, Dirichlet(:u, union(end0, endL), (x, t) -> [0.0, 0.0], [1, 2]))          # pinned, warping free
     add!(ch, Dirichlet(:u, Set([id(1, i_webmid, j_mid)]), (x, t) -> [0.0], [3]))         # axial datum (self-equilibrated load)
+    # intermediate braces: translation components `brace_components` fixed on every node of the section at the station
+    # nearest each z in `braces` (fixing u_x of all nodes also restrains twist there)
+    for zb in braces
+        jb = argmin(abs.(Z .- zb))
+        add!(ch, Dirichlet(:u, Set(id(s, i, jb) for s in 1:2 for i in 1:nn), (x, t) -> zeros(length(brace_components)), brace_components))
+    end
 
     weld_locations = symmetric_weld_locations(L, weld_length, weld_spacing)
     interior = 2:nz-1

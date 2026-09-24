@@ -114,6 +114,51 @@ Findings:
   A predictor built on (w_spacing / section depth) would track the model far better than one built on
   w_length / w_spacing.
 
+## Perforated uprights (`perforated_J_study.jl`, `perforated_J_gmsh.jl`)
+
+The same static twist study with the upright's perforation pattern (14 ga strip layout drawing): teardrop holes
+(Ø0.719 in circle + Ø0.375 in lobe pointing along the member, ≈ 0.90 in long) in two rows 0.797 in from each
+web face (1.406 in apart) every 2.0 in; 0.562 × 0.562 in square holes (R0.02) centred 0.856 in from the web face on
+both flanges every 2.0 in, placed 1.0 in (half a pitch) from the teardrops along the member (assumed stagger; the
+drawing's 0.9215 / 1.517 in dimensions fix the true phase). Holes remove 3.9 % of the shell area.
+
+Two meshes:
+
+- `perforated_J_study.jl`: structured extruded quad mesh (0.21 in around, 0.2 in along), holes as removed cells
+  whose centres lie inside the outlines (pixelated edges).
+- `perforated_J_gmsh.jl`: the developed strip is drawn in Gmsh (OCC) with the true hole outlines, fragmented by the
+  bend lines at every centerline vertex, meshed with recombination (h = 0.2 in; quads plus triangles at the hole
+  boundaries), folded onto the C, and assembled through Ferrite SubDofHandlers with QuadShellFiniteElement.jl for the
+  quads and TriShellFiniteElement.jl for the triangles (both Hughes–Brezzi drilling). `gmsh_strip_mesh.png` shows the
+  strip mesh. The unperforated Gmsh mesh reproduces the structured-mesh J (1.3287e-3 vs 1.3271e-3 in⁴).
+
+| L = 111 in | no holes | perforated | ratio |
+|---|---|---|---|
+| single C, J, Gmsh mesh (44,947 quads + 3,172 tris) | 1.3287e-3 in⁴ | 1.2034e-3 in⁴ | 0.906 |
+| single C, J, structured mesh | 1.3271e-3 | 1.2146e-3 | 0.915 |
+| welded pair r5 (7 × 3 in welds at 18 in), J_eff, Gmsh mesh (89,894 quads + 6,344 tris) | 0.737 in⁴ | 0.572 in⁴ | 0.777 |
+| welded pair r5, J_eff, structured mesh | 0.753 | 0.592 | 0.785 |
+
+Weld spacing sweep with perforations (`perforated_weld_spacing_study.jl`, Gmsh mesh, 3 in welds, L = 111 in;
+`weld_spacing_comparison_perforated.png`, `perforated_weld_spacing_results.csv`):
+
+| w_spacing (in) | 108 | 54 | 36 | 27 | 18 | 12 | 9 | 6 | 3 (continuous) |
+|---|---|---|---|---|---|---|---|---|---|
+| J_eff gross (in⁴) | 0.031 | 0.109 | 0.229 | 0.382 | 0.737 | 1.226 | 1.557 | 1.876 | 2.066 |
+| J_eff perforated (in⁴) | 0.027 | 0.095 | 0.194 | 0.315 | 0.572 | 0.882 | 1.067 | 1.231 | 1.342 |
+| perforated / gross | 0.88 | 0.87 | 0.85 | 0.82 | 0.78 | 0.72 | 0.69 | 0.66 | 0.65 |
+
+The hole penalty grows as the welds get closer: 12 % at 108 in spacing, 22 % at the r5 spacing of 18 in, and 35 % for
+the continuous weld, where the perforated closed cell keeps only 0.65 of the gross J_tube-type stiffness because the
+teardrops interrupt the web shear flow of the cell.
+
+The two meshes agree within 1 % on the reduction. For one C the holes cut J by 9 to 10 %, about 2.4 times the
+removed area fraction: each hole adds free edges and disturbs the Saint-Venant shear flow over a zone longer than
+the hole (compare the free-edge loss of ≈ 0.63 t⁴/3 per edge from the single-member study). For the welded pair the
+loss is 22 %, larger because the closed-cell shear flow through the welds runs through the perforated webs and the
+flange squares sit in the load path between the welds and the C1 lips. Results in `perforated_J_results.csv` and
+`perforated_J_gmsh_results.csv`.
+
 ## Global flexural-torsional buckling (`buckling_built_up.jl`, `ft_analytical_check.jl`, `make_mode_html.jl`)
 
 Elastic eigenbuckling of the welded pair under uniform axial compression, both ends pinned and warping free (all
@@ -142,6 +187,15 @@ Ferrite-condensed dofs (Cᵀ K C) by shift-invert Arnoldi (ArnoldiMethod.jl, spa
 | 120 | | rigid-section | 1 | 52.7 | same mode (E/(1 − ν²) artifact) |
 | 120 | | unconstrained shell | 2 | 103.0 | local |
 | 120 | | Euler, composite I_x | | 47.3 | |
+
+Braced member, L = 120 in (`buckling_braced_L120.jl`, page `mode_all_1_L120_braced_plotly.html`): frame bracing at
+z = 6, 54, 102 in modelled by fixing the X translation of every node of both C's at those stations, which restrains the
+cross-aisle translation and the twist (AISI L_y = L_t = 48 in) and leaves the downaisle (Y) flexure unbraced
+(L_x = 120 in; the web faces the aisle). Unconstrained shell: mode 1 = **51.2 kips**, Y-direction flexure over the
+full height with negligible twist (θ·r/v = 0.02), 4 % above the unbraced 49.2 kips (the braces remove the small
+flexural-torsional coupling but not the governing downaisle flexure); local plate buckling follows at 101 kips.
+Beam theory: P_ey(L_x = 120) = 47.3, P_t(L_t = 48, G J_eff, C_w = 0) = 819, P_ex(L_y = 48) = 649 kips → coupled FT
+45.8 kips. (The rigid-section model cannot take these brace conditions: they would fall on affine master dofs.)
 
 Analytical comparison (Timoshenko, section symmetric about the horizontal axis so bending about x couples with
 torsion: P_FT = [(P_ey + P_t) − √((P_ey + P_t)² − 4 β P_ey P_t)] / (2β), β = 1 − (x_o/r_o)²). The shear center
@@ -187,5 +241,9 @@ versions from `plot_mode_wglmakie.jl`. Results in `buckling_results.csv`, `buckl
 | `make_figure_spacing_comparison.jl` | `weld_spacing_comparison.png`: Ferrite J_eff vs. the Tlumak equation vs. weld spacing, 3 in welds |
 | `buckling_built_up.jl` | eigenbuckling at L = 44 in (global rigid-section and unconstrained); writes `buckling_results.csv`, `mode_*.csv`, `buckling_log.txt` |
 | `plot_mode_wglmakie.jl` | 3D mode shape: `mode_global_1_wglmakie.html` (WGLMakie) and `mode_global_1.png` |
+| `buckling_braced_L120.jl` | L = 120 in with frame braces at z = 6, 54, 102 in (L_x = 120, L_y = L_t = 48 in); writes `buckling_results_L120_braced.csv`, `mode_all_1_L120_braced.csv` |
 | `ft_analytical_check.jl` | Timoshenko FT formula vs. the shell: constrained pure-torsion / pure-flexure eigen loads, static shear center; writes `ft_analytical_check.csv` (`_L120` for 120 in) |
+| `perforated_weld_spacing_study.jl`, `make_figure_spacing_perforated.jl` | weld spacing sweep with and without perforations (Gmsh mesh); `weld_spacing_comparison_perforated.png` |
+| `torsion_deformed_shape_perforated.jl`, `make_torsion_html_mesh.jl` | interactive page of the perforated pair twist from the Gmsh mesh (`torsion_perforated_plotly.html`) |
+| `perforated_J_study.jl`, `perforated_J_gmsh.jl` | perforated single C and welded pair J (structured mesh with removed cells; Gmsh mixed quad/tri mesh with true hole outlines, TriShell + QuadShell assembly); `gmsh_strip_mesh.png` |
 | `single_c_buckling_check.jl`, `single_c_Cw_check.jl`, `single_c_energy_check.jl` | validation of the rigid-section buckling machinery on a single C against classical P_t, Euler, C_w and an energy decomposition |
