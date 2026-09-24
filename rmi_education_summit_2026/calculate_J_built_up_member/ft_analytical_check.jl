@@ -48,21 +48,22 @@ gt = built_up_buckling(; L, mode = :global, nev = 2, restrain = [:u, :v], twist_
 P_t_sh = gt.P_cr[1]
 timo(Pey, Pt) = ((Pey + Pt) - sqrt((Pey + Pt)^2 - 4β * Pey * Pt)) / (2β)
 
-P_t_J = G * J_eff / (A2 * r_o2)                           # torsional buckling from G J_eff alone (C_w = 0)
-Cw_eff = (P_t_sh * A2 * r_o2 - G * J_eff) * L^2 / (π^2 * E)   # warping constant implied by the shell P_t
+P_t_J = G * J_eff / r_o2                                  # torsional buckling load from G J_eff alone (C_w = 0): P_t = (G J + π² E C_w/L²)/r_o²
+Cw_eff = (P_t_sh * r_o2 - G * J_eff) * L^2 / (π^2 * E)        # warping constant implied by the shell P_t (P_t r_o² = G J + π² E C_w/L²)
 
 @printf("\nComposite section: A = %.4f in², Ix = %.4f, Iy = %.4f in⁴, centroid x = %.3f in; L = %.1f in\n", A2, Ix2, Iy2, xc2, L)
 @printf("Shell eigen loads (kips): P_FT = %.1f,  pure torsion P_t = %.1f,  pure y-flexure P_ey = %.1f (Euler %.1f),  pure x-flexure P_ex = %.1f (Euler %.1f)\n",
         P_FT/1e3, P_t_sh/1e3, P_ey_sh/1e3, P_ey/1e3, P_ex_sh/1e3, P_ex/1e3)
 @printf("FT mode at mid-length: v/φ = %.3f in;  using x_o = %.3f in (shear center at x = %.3f in), r_o = %.3f in, β = 1 − (x_o/r_o)² = %.3f\n", V/φ, x_o, xc2 + x_o, sqrt(r_o2), β)
 @printf("\nTimoshenko P_FT with shell P_ey and shell P_t:            %.1f kips   (shell FT %.1f, ratio %.3f)\n", timo(P_ey_sh, P_t_sh)/1e3, P_FT/1e3, timo(P_ey_sh, P_t_sh)/P_FT)
-@printf("Timoshenko P_FT with Euler P_ey and P_t = G J_eff/(A r_o²) (C_w = 0): %.1f kips   (P_t = %.1f kips)\n", timo(P_ey, P_t_J)/1e3, P_t_J/1e3)
+@printf("Timoshenko P_FT with Euler P_ey and P_t = G J_eff/r_o² (C_w = 0):   %.1f kips   (P_t = %.1f kips)\n", timo(P_ey, P_t_J)/1e3, P_t_J/1e3)
+@printf("Shell pure-torsion load ↔ torsional stiffness P_t r_o² = %.0f kip-in²  (G J_eff = %.0f kip-in²)\n", P_t_sh * r_o2 / 1e3, G * J_eff / 1e3)
 @printf("Warping constant implied by the shell pure-torsion load:  C_w,eff = %.3f in⁶  (G J_eff = %.0f, π²E C_w/L² = %.0f kip-in²)\n", Cw_eff, G*J_eff/1e3, π^2*E*Cw_eff/L^2/1e3)
 open(joinpath(@__DIR__, "ft_analytical_check$(tag).csv"), "w") do io
     println(io, "quantity,value,unit")
     for (k, v, u) in (("P_FT_shell", P_FT/1e3, "kips"), ("P_t_shell", P_t_sh/1e3, "kips"), ("P_ey_shell", P_ey_sh/1e3, "kips"), ("P_ey_Euler", P_ey/1e3, "kips"),
                       ("P_ex_shell", P_ex_sh/1e3, "kips"), ("P_ex_Euler", P_ex/1e3, "kips"), ("x_o", x_o, "in"), ("r_o", sqrt(r_o2), "in"), ("beta", β, ""),
-                      ("P_FT_Timoshenko_shell_inputs", timo(P_ey_sh, P_t_sh)/1e3, "kips"), ("P_t_from_GJeff_Cw0", P_t_J/1e3, "kips"),
+                      ("P_FT_Timoshenko_shell_inputs", timo(P_ey_sh, P_t_sh)/1e3, "kips"), ("P_t_from_GJeff_Cw0", P_t_J/1e3, "kips"), ("torsional_stiffness_shell_Pt_ro2", P_t_sh * r_o2 / 1e3, "kip-in^2"),
                       ("P_FT_Timoshenko_GJeff_Cw0", timo(P_ey, P_t_J)/1e3, "kips"), ("Cw_eff_implied", Cw_eff, "in^6"), ("J_eff", J_eff, "in^4"))
         println(io, "$k,$v,$u")
     end
