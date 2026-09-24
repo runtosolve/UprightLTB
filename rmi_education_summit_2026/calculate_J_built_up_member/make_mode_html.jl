@@ -75,9 +75,10 @@ jm = (nz + 1) ÷ 2
 sec_traces = String[]
 for ss in 1:2
     rows = [idx[(ss, ii, jm)] for ii in 1:nn]
-    # section inset plotted with X = the 3 in (downaisle) direction and Y = the 6 in (cross-aisle) direction (AISI L_x, L_y)
-    push!(sec_traces, "{type:'scatter',x:[$(join(xyz[rows, 2], ','))],y:[$(join(xyz[rows, 1], ','))],mode:'lines',line:{color:'#8a8a8a',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
-    push!(sec_traces, "{type:'scatter',x:[$(join(def[rows, 2], ','))],y:[$(join(def[rows, 1], ','))],mode:'lines',line:{color:'#2a78d6',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
+    # section inset: geometry as drawn (6 in direction horizontal); axis labels follow the rack convention,
+    # X = downaisle (the 3 in direction, vertical here), Y = cross-aisle (the 6 in direction, horizontal here)
+    push!(sec_traces, "{type:'scatter',x:[$(join(xyz[rows, 1], ','))],y:[$(join(xyz[rows, 2], ','))],mode:'lines',line:{color:'#8a8a8a',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
+    push!(sec_traces, "{type:'scatter',x:[$(join(def[rows, 1], ','))],y:[$(join(def[rows, 2], ','))],mode:'lines',line:{color:'#2a78d6',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}")
 end
 rx = maximum(def[:, 1]) - minimum(def[:, 1]); ry = maximum(def[:, 2]) - minimum(def[:, 2]); rz = L + 2 * shaft
 ar = round.([rx, ry, rz] ./ max(rx, ry, rz) .* 1.9; digits = 3)
@@ -107,8 +108,8 @@ const layout = {
  title:{text:'Global flexural-torsional buckling mode, two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips ($(modelnote))$(extra)',x:0.02,xanchor:'left',font:{size:15}},
  scene:{domain:{x:[0,0.58],y:[0,1]},aspectmode:'manual',aspectratio:{x:$(ar[1]),y:$(ar[2]),z:$(ar[3])},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:-2.0,y:-2.4,z:0.75},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
- xaxis:{domain:[0.62,0.98],title:{text:'X (in), downaisle'},scaleanchor:'y',scaleratio:1,zeroline:false},
- yaxis:{domain:[0.1,0.9],title:{text:'Y (in), cross-aisle'},zeroline:false},
+ xaxis:{domain:[0.62,0.98],title:{text:'Y (in), cross-aisle'},scaleanchor:'y',scaleratio:1,zeroline:false},
+ yaxis:{domain:[0.2,0.8],title:{text:'X (in), downaisle'},zeroline:false},
  showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
