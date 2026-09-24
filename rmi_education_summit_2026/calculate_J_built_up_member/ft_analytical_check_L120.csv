@@ -1,0 +1,15 @@
+quantity,value,unit
+P_FT_shell,52.73324651503471,kips
+P_t_shell,735.9920204345123,kips
+P_ey_shell,54.5522414389474,kips
+P_ey_Euler,47.25617420789199,kips
+P_ex_shell,110.2244250215359,kips
+P_ex_Euler,103.83842620965386,kips
+x_o,-2.413466761657771,in
+r_o,3.3036358022450862,in
+beta,0.46629863184364484,
+P_FT_Timoshenko_shell_inputs,52.40787302364669,kips
+P_t_from_GJeff_Cw0,543.5897284205604,kips
+P_FT_Timoshenko_GJeff_Cw0,45.080460414323426,kips
+Cw_eff_implied,152.5023394693788,in^6
+J_eff,0.7678,in^4

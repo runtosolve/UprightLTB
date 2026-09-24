@@ -15,7 +15,8 @@ and [QuadShellFiniteElement.jl](https://github.com/runtosolve/QuadShellFiniteEle
 
 **Hosted pages**
 
-- Global flexural-torsional buckling mode (L = 44 in): https://runtosolve.github.io/UprightLTB/
+- Global flexural-torsional buckling mode, L = 44 in (rigid-section model, P_cre = 298.9 kips): https://runtosolve.github.io/UprightLTB/
+- Lowest global buckling mode, L = 120 in (unconstrained shell, P_cre = 49.2 kips): https://runtosolve.github.io/UprightLTB/L120.html
 - Static twist study for J_eff (L = 111 in, 3 in welds at 18 in) is hosted separately at
   https://runtosolve.github.io/Upright_torsion_J_study/ (repository runtosolve/Upright_torsion_J_study).
 

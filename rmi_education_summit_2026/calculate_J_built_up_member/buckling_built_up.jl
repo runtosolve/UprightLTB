@@ -22,7 +22,8 @@
 #   :global  — the cross section of the whole built-up member is constrained to move rigidly in-plane at
 #              every station (u, v, θz shared by all nodes of both C's, warping u_z left free), which
 #              suppresses local and distortional buckling and leaves the global flexural and
-#              flexural-torsional modes. The weld ties keep only their u_z, θx, θy parts (their in-plane
+#              flexural-torsional modes. K_g uses the uniform axial reference stress −P/A (the constrained
+#              prebuckling solve would otherwise carry an artificial Poisson transverse compression ν σ_z). The weld ties keep only their u_z, θx, θy parts (their in-plane
 #              parts are implied by the rigid-section constraint). This is the shell-model counterpart of a
 #              beam flexural-torsional buckling analysis, with warping and shear deformation from the FE.
 #
@@ -159,7 +160,16 @@ function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, m
     qr_g = QuadratureRule{RefQuadrilateral}(2)
     σXX, σYY, τXY = Q.element_membrane_stresses(dh, u, IP4(), E, ν, t; qr = qr_g)
     σz_mean = mean(mean.(σXX))                     # element local x runs along the extrusion direction z
+    σs_mean = mean(mean.(σYY)); τ_mean = mean(mean.(τXY))   # transverse (around the section) and shear membrane stress
     Kg = allocate_matrix(dh)
+    if mode == :global
+        # the rigid-section constraint blocks Poisson expansion in the prebuckling solve and creates an artificial
+        # transverse compression σ_s = ν σ_z that destabilizes twist; use the true reference state instead:
+        # uniform axial stress −P/A, no transverse or shear membrane stress (the constraint acts on the buckling
+        # displacements only)
+        σ0 = -P_ref / A_total
+        σXX = [fill(σ0, length(v)) for v in σXX]; σYY = [zero(v) for v in σYY]; τXY = [zero(v) for v in τXY]
+    end
     Kg = Q.assemble_global_Kg!(Kg, dh, qr_g, IP4(), σXX .* t, σYY .* t, τXY .* t)
 
     # ---- condensed eigenproblem  K_c φ = P (−K_g,c) φ  via shift-invert Arnoldi on  K_c⁻¹ (−K_g,c)
@@ -197,6 +207,7 @@ function built_up_buckling(; L = 44.0, weld_length = 3.0, weld_spacing = 18.0, m
     if verbose
         @printf("  %s: L = %.1f in, welds at %s, %d dofs, %d constrained; A = %.4f in², σ_ref = %.2f psi (uniform check: mean σ_z = %.2f)\n",
                 mode, L, string(weld_locations), ndofs(dh), length(ch.prescribed_dofs), A_total, P_ref / A_total, -σz_mean)
+        @printf("  prebuckling membrane stress: mean σ_z = %.1f psi, mean transverse σ_s = %.1f psi (ν σ_z would be %.1f), mean τ = %.1f psi\n", σz_mean, σs_mean, ν * σz_mean, τ_mean)
         for (k, P) in enumerate(P_cr)
             c = info[k]
             @printf("  mode %d: P_cr = %10.1f lbf = %8.2f kips, σ_cr = %8.2f ksi;  rigid-section participation %.3f;  mid-length U = %+.3f V = %+.3f θ·r_max/|U,V| = %.2f\n",
@@ -219,7 +230,8 @@ function write_mode(path, r, k)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    L = 44.0
+    L = length(ARGS) >= 1 ? parse(Float64, ARGS[1]) : 44.0          # e.g.  julia --project=. buckling_built_up.jl 120
+    tag = L == 44.0 ? "" : "_L$(Int(round(L)))"
     println("Built-up two-C upright, L = $L in, pinned warping-free ends, 3 in welds at 18 in spacing\n")
     println("Global modes (rigid in-plane cross section, warping free):")
     g = built_up_buckling(; L, mode = :global, nev = 4)
@@ -234,7 +246,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
     @printf("\nComposite section (rigidly joined): A = %.4f in², Ix = %.4f in⁴ (about horizontal axis), Iy = %.4f in⁴;  Euler P_ey = %.1f kips (bending about x, deflection in y), P_ex = %.1f kips\n",
             A2, Ix2, Iy2, Pey / 1000, Pex / 1000)
 
-    open(joinpath(@__DIR__, "buckling_results.csv"), "w") do io
+    open(joinpath(@__DIR__, "buckling_results$(tag).csv"), "w") do io
         println(io, "analysis,mode,P_cr_lbf,P_cr_kips,sigma_cr_ksi,rigid_section_participation,U_mid,V_mid,theta_mid,twist_to_translation")
         for (name, r) in (("global", g), ("all", a)), (k, P) in enumerate(r.P_cr)
             c = r.info[k]
@@ -243,8 +255,8 @@ if abspath(PROGRAM_FILE) == @__FILE__
         println(io, "euler_composite,P_ey,$Pey,$(Pey/1000),$(Pey/A2/1000),,,,,")
         println(io, "euler_composite,P_ex,$Pex,$(Pex/1000),$(Pex/A2/1000),,,,,")
     end
-    write_mode(joinpath(@__DIR__, "mode_global_1.csv"), g, 1)
-    write_mode(joinpath(@__DIR__, "mode_global_2.csv"), g, 2)
-    write_mode(joinpath(@__DIR__, "mode_all_1.csv"), a, 1)
-    println("\nWrote buckling_results.csv, mode_global_1.csv, mode_global_2.csv, mode_all_1.csv")
+    write_mode(joinpath(@__DIR__, "mode_global_1$(tag).csv"), g, 1)
+    write_mode(joinpath(@__DIR__, "mode_global_2$(tag).csv"), g, 2)
+    write_mode(joinpath(@__DIR__, "mode_all_1$(tag).csv"), a, 1)
+    println("\nWrote buckling_results$(tag).csv, mode_global_1$(tag).csv, mode_global_2$(tag).csv, mode_all_1$(tag).csv")
 end

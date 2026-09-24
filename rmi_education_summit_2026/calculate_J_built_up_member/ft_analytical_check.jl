@@ -5,7 +5,8 @@
 # r_o² = (I_x + I_y)/A + x_o².  P_ey, P_t are also obtained from the shell model by restraining the rigid-section dofs,
 # and x_o is backed out of the FT mode shape ratio  (P_ey − P) v = −P x_o φ.
 include(joinpath(@__DIR__, "buckling_built_up.jl"))
-L = 44.0
+L = length(ARGS) >= 1 ? parse(Float64, ARGS[1]) : 44.0
+tag = L == 44.0 ? "" : "_L$(Int(round(L)))"
 X1, Y1 = centerline(shape); sp = section_properties(X1, Y1, shape.t)
 A2 = 2sp.A; Ix2 = 2sp.Ixx; Iy2 = 2 * (sp.Iyy + sp.A * (shape.B / 2)^2)
 P_ey = π^2 * E * Ix2 / L^2; P_ex = π^2 * E * Iy2 / L^2
@@ -57,7 +58,7 @@ Cw_eff = (P_t_sh * A2 * r_o2 - G * J_eff) * L^2 / (π^2 * E)   # warping constan
 @printf("\nTimoshenko P_FT with shell P_ey and shell P_t:            %.1f kips   (shell FT %.1f, ratio %.3f)\n", timo(P_ey_sh, P_t_sh)/1e3, P_FT/1e3, timo(P_ey_sh, P_t_sh)/P_FT)
 @printf("Timoshenko P_FT with Euler P_ey and P_t = G J_eff/(A r_o²) (C_w = 0): %.1f kips   (P_t = %.1f kips)\n", timo(P_ey, P_t_J)/1e3, P_t_J/1e3)
 @printf("Warping constant implied by the shell pure-torsion load:  C_w,eff = %.3f in⁶  (G J_eff = %.0f, π²E C_w/L² = %.0f kip-in²)\n", Cw_eff, G*J_eff/1e3, π^2*E*Cw_eff/L^2/1e3)
-open(joinpath(@__DIR__, "ft_analytical_check.csv"), "w") do io
+open(joinpath(@__DIR__, "ft_analytical_check$(tag).csv"), "w") do io
     println(io, "quantity,value,unit")
     for (k, v, u) in (("P_FT_shell", P_FT/1e3, "kips"), ("P_t_shell", P_t_sh/1e3, "kips"), ("P_ey_shell", P_ey_sh/1e3, "kips"), ("P_ey_Euler", P_ey/1e3, "kips"),
                       ("P_ex_shell", P_ex_sh/1e3, "kips"), ("P_ex_Euler", P_ex/1e3, "kips"), ("x_o", x_o, "in"), ("r_o", sqrt(r_o2), "in"), ("beta", β, ""),
