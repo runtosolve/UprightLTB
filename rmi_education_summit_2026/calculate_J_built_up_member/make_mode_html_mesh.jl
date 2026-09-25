@@ -75,8 +75,9 @@ end
 rx = maximum(def[:, 1]) - minimum(def[:, 1]); ry = maximum(def[:, 2]) - minimum(def[:, 2]); rz = L + 2 * shaft
 ar = round.([rx, ry, rz] ./ max(rx, ry, rz) .* 1.9; digits = 3)
 js(v) = join((x === nothing ? "null" : string(round(x, digits = 4)) for x in v), ',')
-holes_note = perforated ? "PERFORATED (teardrop web holes, square flange holes; Gmsh mesh, $(nq) quads + $(nt) triangles)" : "no holes (Gmsh mesh, $(nq) quads)"
-title = "Lowest buckling mode, two-C welded upright, $(holes_note), L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips (unconstrained shell)<br>" *
+holes_note = perforated ? "teardrop web holes and square flange holes (Gmsh mesh, $(nq) quads + $(nt) triangles)" : "no holes (Gmsh mesh, $(nq) quads)"
+title = "Lowest buckling mode, $(perforated ? "PERFORATED " : "")two-C welded upright, L = $(Int(L)) in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = $(round(P, digits = 1)) kips<br>" *
+        "$(holes_note); unconstrained shell model<br>" *
         "frame bracing (green outlines) at z = $(join(Int.(braces), ", ")) in restrains cross-aisle translation and twist (L<sub>y</sub> = L<sub>t</sub> = 48 in); downaisle flexure unbraced (L<sub>x</sub> = $(Int(L)) in)"
 
 html = """
@@ -105,7 +106,7 @@ const layout = {
         camera:{projection:{type:'orthographic'},eye:{x:-2.0,y:-2.4,z:0.75},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'Y (in), cross-aisle'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.2,0.8],title:{text:'X (in), downaisle'},zeroline:false},
- showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ showlegend:false,margin:{l:30,r:20,t:85,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
 """

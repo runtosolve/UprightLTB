@@ -21,11 +21,11 @@ const data = [
  {type:'scatter',x:[5.9799,5.9675,5.9551,5.9427,5.9308,5.9168,5.8891,5.8533,5.805,5.751,5.1043,4.4544,3.8043,3.1566,3.1041,3.0599,3.0241,3.0027,2.9964,3.0037,2.9992,2.995,3.0035,3.0134,3.038,3.0738,3.12,3.1733,3.8209,4.4718,5.1229,5.7713,5.8232,5.8653,5.9012,5.9195,5.9217,5.9096,5.8973,5.885,5.8727],y:[6.4127,6.5503,6.6879,6.8256,6.9603,7.012,7.054,7.0898,7.108,7.1102,7.0525,6.9979,6.9361,6.9237,6.9137,6.8892,6.8533,6.8071,6.7538,6.1065,5.4559,4.8055,4.1577,4.1051,4.061,4.0251,4.0037,3.9976,4.0099,4.0713,4.1254,4.1825,4.1964,4.2241,4.26,4.3083,4.3625,4.4975,4.6354,4.7732,4.9111],mode:'lines',line:{color:'#2a78d6',width:4},showlegend:false,hoverinfo:'skip',xaxis:'x',yaxis:'y'}
 ];
 const layout = {
- title:{text:'Lowest buckling mode, two-C welded upright, PERFORATED (teardrop web holes, square flange holes; Gmsh mesh, 99878 quads + 1320 triangles), L = 120 in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = 42.1 kips (unconstrained shell)<br>frame bracing (green outlines) at z = 6, 54, 102 in restrains cross-aisle translation and twist (L<sub>y</sub> = L<sub>t</sub> = 48 in); downaisle flexure unbraced (L<sub>x</sub> = 120 in)',x:0.02,xanchor:'left',font:{size:15}},
+ title:{text:'Lowest buckling mode, PERFORATED two-C welded upright, L = 120 in, pinned warping-free, 3 in welds at 18 in:  P<sub>cre</sub> = 42.1 kips<br>teardrop web holes and square flange holes (Gmsh mesh, 99878 quads + 1320 triangles); unconstrained shell model<br>frame bracing (green outlines) at z = 6, 54, 102 in restrains cross-aisle translation and twist (L<sub>y</sub> = L<sub>t</sub> = 48 in); downaisle flexure unbraced (L<sub>x</sub> = 120 in)',x:0.02,xanchor:'left',font:{size:15}},
  scene:{domain:{x:[0,0.58],y:[0,1]},aspectmode:'manual',aspectratio:{x:0.092,y:0.109,z:1.9},xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
         camera:{projection:{type:'orthographic'},eye:{x:-2.0,y:-2.4,z:0.75},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}},dragmode:'orbit'},
  xaxis:{domain:[0.62,0.98],title:{text:'Y (in), cross-aisle'},scaleanchor:'y',scaleratio:1,zeroline:false},
  yaxis:{domain:[0.2,0.8],title:{text:'X (in), downaisle'},zeroline:false},
- showlegend:false,margin:{l:30,r:20,t:60,b:30},autosize:true,paper_bgcolor:'#fff'};
+ showlegend:false,margin:{l:30,r:20,t:85,b:30},autosize:true,paper_bgcolor:'#fff'};
 Plotly.newPlot('plot', data, layout, {responsive:true, displaylogo:false});
 </script></body></html>
