@@ -197,6 +197,31 @@ flexural-torsional coupling but not the governing downaisle flexure); local plat
 Beam theory: P_ey(L_x = 120) = 47.3, P_t(L_t = 48, G J_eff, C_w = 0) = 819, P_ex(L_y = 48) = 649 kips → coupled FT
 45.8 kips. (The rigid-section model cannot take these brace conditions: they would fall on affine master dofs.)
 
+Braced member with perforations, L = 120 in (`buckling_braced_L120_perforated.jl`, page
+`mode_L120_braced_perforated_plotly.html`): the same braced problem on the Gmsh mixed quad/triangle mesh of
+`perforated_J_gmsh.jl` with the torsion study's hole pattern (teardrops in both webs, squares in all four flanges),
+QuadShell + TriShell elastic and geometric stiffness (`assemble_mixed_Kg!`), prebuckling membrane stresses from the
+perforated shell (non-uniform around the holes), tributary end loads on the unperforated end sections, braces as
+u_x = 0 on the mesh cross lines at z = 6, 54, 102 in (the strip is fragmented by these lines). The weld at z = 6
+overlaps the brace: its rigid-body master is taken off the brace line and the on-brace slaves are tied in the other
+five dofs.
+
+| mesh | holes | mode 1 (kips) | character | mode 2 (kips) |
+|---|---|---|---|---|
+| structured quads | none | 51.2 | Y flexure over 120 in | 101 (local) |
+| Gmsh (86 794 quads) | none | 50.1 | same (pipeline check, −2 %) | 99.6 (local) |
+| Gmsh (99 878 quads + 1 320 triangles) | perforated | **42.1** | Y flexure over 120 in, θ·r/v = 0.03 | 74.1 (local at the holes) |
+
+The perforations reduce P_cre by 16 % on the same mesh (42.1 vs 50.1 kips; 18 % vs the structured 51.2). A
+weighted-average net-section estimate is much smaller: the thin-wall I_x of one C about the horizontal axis is
+1.169 in⁴ gross, 1.111 at a teardrop section (95 %) and 0.992 at a flange-square section (85 %), and with the
+teardrops covering 45 % and the squares 28 % of the length the length-weighted I_x is 93.5 % of gross
+(Euler 47.3 → 44.2 kips, −6.5 %). The shell reduction is larger because the squares sit at the flange extreme
+fibres: between the web and the lip the flange is cut to a 0.4 in strip every 2 in, so the outer flange and lip
+carry less of the bending stress than the net-section inertia assumes. The mean prebuckling axial stress is 9 %
+higher than P/A_gross (709 vs 651 psi for 1 kip), consistent with the 10 % length-averaged area loss.
+Results in `buckling_results_L120_braced_perforated.csv` and `buckling_results_L120_braced_gmsh_gross.csv`.
+
 Analytical comparison (Timoshenko, section symmetric about the horizontal axis so bending about x couples with
 torsion: P_FT = [(P_ey + P_t) − √((P_ey + P_t)² − 4 β P_ey P_t)] / (2β), β = 1 − (x_o/r_o)²). The shear center
 by statics on the rigid-section model (zero twist under a mid-length transverse force, welds included) is at
@@ -242,6 +267,7 @@ versions from `plot_mode_wglmakie.jl`. Results in `buckling_results.csv`, `buckl
 | `buckling_built_up.jl` | eigenbuckling at L = 44 in (global rigid-section and unconstrained); writes `buckling_results.csv`, `mode_*.csv`, `buckling_log.txt` |
 | `plot_mode_wglmakie.jl` | 3D mode shape: `mode_global_1_wglmakie.html` (WGLMakie) and `mode_global_1.png` |
 | `buckling_braced_L120.jl` | L = 120 in with frame braces at z = 6, 54, 102 in (L_x = 120, L_y = L_t = 48 in); writes `buckling_results_L120_braced.csv`, `mode_all_1_L120_braced.csv` |
+| `buckling_braced_L120_perforated.jl`, `make_mode_html_mesh.jl` | the braced L = 120 in case with the perforation pattern on the Gmsh mixed mesh (`gross` argument runs the no-hole check); writes `buckling_results_L120_braced_perforated.csv`, `mode_L120_braced_perforated_{nodes,cells,summary}.csv`; page `mode_L120_braced_perforated_plotly.html` |
 | `ft_analytical_check.jl` | Timoshenko FT formula vs. the shell: constrained pure-torsion / pure-flexure eigen loads, static shear center; writes `ft_analytical_check.csv` (`_L120` for 120 in) |
 | `perforated_weld_spacing_study.jl`, `make_figure_spacing_perforated.jl` | weld spacing sweep with and without perforations (Gmsh mesh); `weld_spacing_comparison_perforated.png` |
 | `torsion_deformed_shape_perforated.jl`, `make_torsion_html_mesh.jl` | interactive page of the perforated pair twist from the Gmsh mesh (`torsion_perforated_plotly.html`) |

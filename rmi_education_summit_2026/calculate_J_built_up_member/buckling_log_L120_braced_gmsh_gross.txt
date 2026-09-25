@@ -1,0 +1,15 @@
+┌ Warning: no entities added to the set with name: tri
+└ @ Ferrite ~/.julia/packages/Ferrite/e5O5M/src/Grid/utils.jl:4
+Two-C welded upright, L = 120 in, pinned warping-free, 3 in welds at 18 in, braces (u_x = 0) at z = 6, 54, 102 in; no holes (pipeline check), Gmsh mixed mesh
+
+  mesh: 86794 quads + 0 tris, 88140 nodes, 528840 dofs (3 s)
+  438 brace nodes, 1666 weld ties, 11003 prescribed dofs; A_gross = 1.4680 in² (end edge areas 1.4680 / 1.4680), σ_ref = 681.19 psi, mean prebuckling σ_z = 650.65 psi (18 s)
+  mode 1: P_cr =    50142.0 lbf =    50.14 kips, σ_cr(gross) =   34.16 ksi;  rigid-section participation 1.000;  mid-length U = -0.000 V = +1.000 θ·r_max/|U,V| = 0.02
+  mode 2: P_cr =    99602.6 lbf =    99.60 kips, σ_cr(gross) =   67.85 ksi;  rigid-section participation 0.021;  mid-length U = -1.000 V = -0.060 θ·r_max/|U,V| = 0.09
+  mode 3: P_cr =   101778.9 lbf =   101.78 kips, σ_cr(gross) =   69.33 ksi;  rigid-section participation 0.026;  mid-length U = -1.000 V = +0.054 θ·r_max/|U,V| = 0.11
+  mode 4: P_cr =   103177.2 lbf =   103.18 kips, σ_cr(gross) =   70.28 ksi;  rigid-section participation 0.022;  mid-length U = -1.000 V = +0.034 θ·r_max/|U,V| = 0.08
+  (66 s total)
+
+Reference (structured quad mesh, no holes, buckling_results_L120_braced.csv): mode 1 = 51.2 kips (global, Y-flexure over Lx = 120 in)
+Wrote buckling_results_L120_braced_gmsh_gross.csv, mode_L120_braced_gmsh_gross_{nodes,cells,summary}.csv
+DONE

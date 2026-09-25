@@ -1,0 +1,12 @@
+Two-C welded upright, L = 120 in, pinned warping-free, 3 in welds at 18 in, braces (u_x = 0) at z = 6, 54, 102 in; PERFORATED (teardrop web holes, square flange holes), Gmsh mixed mesh
+
+  mesh: 99878 quads + 1320 tris, 106412 nodes, 638400 dofs (4 s)
+  402 brace nodes, 1666 weld ties, 10967 prescribed dofs; A_gross = 1.4680 in² (end edge areas 1.4680 / 1.4680), σ_ref = 681.19 psi, mean prebuckling σ_z = 708.86 psi (22 s)
+  mode 1: P_cr =    42111.3 lbf =    42.11 kips, σ_cr(gross) =   28.69 ksi;  rigid-section participation 1.000;  mid-length U = -0.000 V = +1.000 θ·r_max/|U,V| = 0.03
+  mode 2: P_cr =    74109.4 lbf =    74.11 kips, σ_cr(gross) =   50.48 ksi;  rigid-section participation 0.024;  mid-length U = -1.000 V = -0.058 θ·r_max/|U,V| = 0.08
+  mode 3: P_cr =    77725.3 lbf =    77.73 kips, σ_cr(gross) =   52.95 ksi;  rigid-section participation 0.039;  mid-length U = +1.000 V = +0.024 θ·r_max/|U,V| = 0.06
+  mode 4: P_cr =    77943.5 lbf =    77.94 kips, σ_cr(gross) =   53.09 ksi;  rigid-section participation 0.034;  mid-length U = -1.000 V = +0.018 θ·r_max/|U,V| = 0.00
+  (44 s total)
+
+Reference (structured quad mesh, no holes, buckling_results_L120_braced.csv): mode 1 = 51.2 kips (global, Y-flexure over Lx = 120 in)
+Wrote buckling_results_L120_braced_perforated.csv, mode_L120_braced_perforated_{nodes,cells,summary}.csv
