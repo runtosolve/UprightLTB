@@ -220,7 +220,7 @@ teardrops covering 45 % and the squares 28 % of the length the length-weighted I
 fibres: between the web and the lip the flange is cut to a 0.4 in strip every 2 in, so the outer flange and lip
 carry less of the bending stress than the net-section inertia assumes. The mean prebuckling axial stress is 9 %
 higher than P/A_gross (709 vs 651 psi for 1 kip), consistent with the 10 % length-averaged area loss.
-Results in `buckling_results_L120_braced_perforated.csv` and `buckling_results_L120_braced_gmsh_gross.csv`.
+Results in `buckling_results_L120_braced_perforated.csv` and `buckling_results_L120_braced_gmsh_gross.csv`. Pages: `mode_L120_braced_perforated_plotly.html` and `mode_L120_braced_gmsh_gross_plotly.html` (no holes, same mesh pipeline).
 
 Analytical comparison (Timoshenko, section symmetric about the horizontal axis so bending about x couples with
 torsion: P_FT = [(P_ey + P_t) − √((P_ey + P_t)² − 4 β P_ey P_t)] / (2β), β = 1 − (x_o/r_o)²). The shear center
